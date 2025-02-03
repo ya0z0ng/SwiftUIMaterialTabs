@@ -171,6 +171,7 @@ public struct MaterialTabsScroll<Content, Tab, Item>: View where Content: View, 
                 Color.clear.frame(height: scrollModel.bottomMargin)
             }
         }
+        .scrollBounceBehavior(.always)
         .coordinateSpace(name: coordinateSpaceName)
         .map { content in
             switch scrollModel.scrollMode {

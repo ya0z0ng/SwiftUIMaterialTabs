@@ -54,6 +54,7 @@ class ScrollModel<Item, Tab>: ObservableObject where Item: Hashable, Tab: Hashab
     func selectedTabChanged() {
         guard let headerModel else { return }
         selectedTab = headerModel.state.headerContext.selectedTab
+        _lockBottomMargin = nil
     }
 
     #if canImport(ScrollPosition)
@@ -126,9 +127,16 @@ class ScrollModel<Item, Tab>: ObservableObject where Item: Hashable, Tab: Hashab
 
     // MARK: Configuring the bottom margin
 
+    private var _lockBottomMargin: CGFloat? = nil
     private func configureBottomMargin() {
         guard let headerModel, let contentSize else { return }
-        bottomMargin = max(0, headerModel.state.height - contentSize.height - headerModel.state.headerContext.minTotalHeight)
+        
+        var height = _lockBottomMargin ?? headerModel.state.headerContext.minTotalHeight
+        if _lockBottomMargin == nil && headerModel.state.headerContext.offset <= 0.2 {
+            _lockBottomMargin = headerModel.state.headerContext.height
+            height = _lockBottomMargin!
+        }
+        bottomMargin = max(0, headerModel.state.height - contentSize.height - height)
     }
 
     // MARK: Adjusting scroll and header state
